@@ -21,7 +21,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -66,22 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
               if(snapshot.connectionState == ConnectionState.waiting){
                 return const CircularProgressIndicator();
               } else if(snapshot.hasData && snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
-                return ListView.builder(
-                    itemCount: snapshot.data!.characters!.results!.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: ListTile(
-                          leading: Image(
-                            image: NetworkImage(
-                              snapshot.data!.characters!.results![index].image!,
-                            ),
-                          ),
-                          title: Text(snapshot.data!.characters!.results![index].name!),
-                          subtitle: genderWidget(snapshot.data!.characters!.results![index].gender!),
-                          trailing: statusWidget(snapshot.data!.characters!.results![index].status!),
-                        ),
-                      );
-                    } );
+                return listWidget(snapshot.data);
               } else if(snapshot.hasError || snapshot.data == null) {
                 return const Text("Something went wrong");
               } else {
@@ -169,5 +153,24 @@ class _MyHomePageState extends State<MyHomePage> {
         Text(gender),
       ],
     );
+  }
+
+  Widget listWidget(CharactersResponse? data) {
+    return ListView.builder(
+        itemCount: data!.characters!.results!.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: Image(
+                image: NetworkImage(
+                  data.characters!.results![index].image!,
+                ),
+              ),
+              title: Text(data.characters!.results![index].name!),
+              subtitle: genderWidget(data.characters!.results![index].gender!),
+              trailing: statusWidget(data.characters!.results![index].status!),
+            ),
+          );
+        } );
   }
 }
