@@ -80,20 +80,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<CharactersResponse?> getGraphQLData() async {
 
-    GraphQLClient client = graphQLConfig.clientQuery(GraphQLConstant.graphQLLink);
-    QueryOptions options = QueryOptions(document: gql(queryMutation.getQuery()));
-    QueryResult result = await client.query(options);
+    try {
+      GraphQLClient client = graphQLConfig.clientQuery(GraphQLConstant.graphQLLink);
+      QueryOptions options = QueryOptions(document: gql(queryMutation.getQuery()));
+      QueryResult result = await client.query(options);
 
+      if(!result.hasException) {
+        print(result.toString()); //Avoid `print` calls in production code.
+        CharactersResponse response = CharactersResponse.fromJson(result.data!);
+        return response;
+      }
+      else {
+        print("error : ${result.toString()}");//Avoid `print` calls in production code.
+        return null;
+      }
 
-    if(!result.hasException) {
-      print(result.toString()); //Avoid `print` calls in production code.
-      CharactersResponse response = CharactersResponse.fromJson(result.data!);
-      return response;
+    } on Exception catch (e) {
+      print(e.toString());
     }
-    else {
-      print("error : ${result.toString()}");//Avoid `print` calls in production code.
-      return null;
-    }
+
   }
 
   Widget statusWidget(String status) {
